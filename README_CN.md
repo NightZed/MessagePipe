@@ -25,7 +25,7 @@ MessagePipe 的性能远超标准 C# 事件，比 Prism 的 EventAggregator 快 
 
 ![](https://user-images.githubusercontent.com/46207/117535259-da753d00-b02f-11eb-9818-0ab5ef3049b1.png)
 
-入门指南（Getting Started）
+入门指南
 ---
 在 .NET 中使用 NuGet 安装。Unity 用户请参考 [Unity](#unity) 章节。
 
@@ -87,7 +87,7 @@ public class SceneB
 }
 ```
 
-与事件机制类似，但通过类型解耦。`Subscribe` 返回 `IDisposable`，便于取消订阅。可通过 `DisposableBag`（类似 `CompositeDisposable`）批量管理订阅。详见[管理订阅与诊断（Managing Subscription and Diagnostics）](#--------managing-subscription-and-diagnostics-)章节。
+与事件机制类似，但通过类型解耦。`Subscribe` 返回 `IDisposable`，便于取消订阅。可通过 `DisposableBag`（类似 `CompositeDisposable`）批量管理订阅。详见[管理订阅与诊断](#管理订阅与诊断)章节。
 
 发布者/订阅者（内部称为 MessageBroker）由 DI 管理，支持按作用域隔离。作用域释放时自动取消所有订阅，防止泄漏。
 
@@ -183,7 +183,7 @@ public partial class BlazorPage : ComponentBase, IDisposable
 
 接口虽多，但 API 设计统一，功能相似。
 
-发布/订阅接口（Publish/Subscribe）
+发布/订阅接口
 ---
 发布/订阅接口分为带键（主题）和无键、同步和异步四类：
 
@@ -244,7 +244,7 @@ public interface IAsyncSubscriber<TKey, TMessage>
 
 所有接口都可以通过 DI 以 `IPublisher/Subscribe<T>` 的形式使用。异步接口的 `await PublishAsync` 可等待所有订阅者完成。发布策略（`AsyncPublishStrategy`）默认为并行（`Parallel`），可通过 `MessagePipeOptions` 或发布时指定。若无需等待，可使用 `void Publish` 即发即弃。
 
-通过自定义过滤器可修改执行前后的行为（详见 [过滤器（Filter）](#----filter-) 章节）。
+通过自定义过滤器可修改执行前后的行为（详见 [过滤器](#过滤器) 章节）。
 
 错误会传播给调用方并终止后续订阅，此行为可通过过滤器修改。
 
@@ -252,7 +252,7 @@ public interface IAsyncSubscriber<TKey, TMessage>
 ---
 I(Async)Publisher(Subscriber) 默认生命周期由 `MessagePipeOptions.InstanceLifetime` 决定。但如果声明为 `ISingletonPublisher<TMessage>`/`ISingletonSubscriber<TKey, TMessage>`、`ISingletonAsyncPublisher<TMessage>`/`ISingletonAsyncSubscriber<TKey, TMessage>`，则强制为单例。同理，`IScopedPublisher<TMessage>`/`IScopedSubscriber<TKey, TMessage>`、`IScopedAsyncPublisher<TMessage>`/`IScopedAsyncSubscriber<TKey, TMessage>` 为作用域生命周期。
 
-缓冲接口（Buffered）
+缓冲接口
 ---
 `IBufferedPublisher<TMessage>/IBufferedSubscriber<TMessage>` 类似于 `BehaviorSubject` 或 RxSwift 的 `BehaviorRelay`， `Subscribe` 订阅时返回最新值。
 
@@ -275,7 +275,7 @@ DisposableBag.Create(d1, d2).Dispose();
 
 > Keyed buffered publisher/subscriber does not exist because difficult to avoid memory leak of (unused)key and keep latest value.> 不存在带键的缓冲发布者/订阅者，因为难以避免（未使用的）键的内存泄漏，也无法保证值最新。
 
-事件工厂（EventFactory）
+事件工厂
 ---
 通过 `EventFactory` 可创建类似 C# 事件的泛型接口（`IPublisher/ISubscriber`, `IAsyncPublisher/IAsyncSubscriber`, `IBufferedPublisher/IBufferedSubscriber`, `IBufferedAsyncPublisher/IBufferedAsyncSubscriber`），订阅者与实例绑定而非按类型分组。
 
@@ -322,7 +322,7 @@ public class BetterEvent : IDisposable
 }
 ```
 
-若需在 DI 外部创建事件，参考[全局服务提供者（Global provider）](#--------global-provider-)章节。
+若需在 DI 外部创建事件，参考[全局服务提供者](#全局服务提供者)章节。
 
 ```csharp
 IDisposablePublisher<int> tickPublisher;
@@ -334,7 +334,7 @@ ctor()
 }
 ```
 
-请求/响应/全量处理（Request/Response/All）
+请求/响应/全量处理
 ---
 与[MediatR](https://github.com/jbogard/MediatR)类似，实现中介者模式的支持。
 
@@ -442,7 +442,7 @@ class BarController
 }
 ```
 
-订阅的扩展方法（Extension）
+订阅的扩展方法
 ---
 `ISubscriber`（或 `IAsyncSubscriber`）接口要求使用 `IMessageHandler<T>` 处理消息：
 
@@ -480,7 +480,7 @@ var value = await subscriber.FirstAsync(cts.Token);
 
 `FirstAsync` 适用于同步和异步订阅（无键、键控、缓冲）。
 
-过滤器（Filter）
+过滤器
 ---
 过滤器系统可在方法调用前后插入逻辑，采用中间件模式设计，允许以类似的语法编写同步和异步代码。
 MessagePipe 提供多种过滤器类型：
@@ -639,7 +639,7 @@ public class DelayRequestFilter : AsyncRequestHandlerFilter<int, int>
 }
 ```
 
-管理订阅与诊断（Managing Subscription and Diagnostics）
+管理订阅与诊断
 ---
 订阅方法返回 `IDisposable` 对象，调用 `Dispose` 方法即可取消订阅。相比传统事件机制，这种方式能更便捷地管理订阅。若要管理多个 `IDisposable` 对象，可以使用 Rx（如 UniRx）中的 `CompositeDisposable`，或 MessagePipe 内置的 `DisposableBag`。
 
@@ -1114,7 +1114,7 @@ public interface IAsyncRequestAllHandler<in TRequest, TResponse>
 
 ### EnableCaptureStackTrace
 
-详见 [管理订阅与诊断（Managing Subscription and Diagnostics）](#--------managing-subscription-and-diagnostics-) 章节，若启用（`true`），在订阅时捕获堆栈跟踪，便于调试但会影响性能。默认值为 `false`，建议仅在调试时开启。
+详见 [管理订阅与诊断](#管理订阅与诊断) 章节，若启用（`true`），在订阅时捕获堆栈跟踪，便于调试但会影响性能。默认值为 `false`，建议仅在调试时开启。
 
 ### AddGlobal***Filter
 
@@ -1160,7 +1160,7 @@ Host.CreateDefaultBuilder()
     });
 ```
 
-全局服务提供者（Global provider）
+全局服务提供者
 ---
 若需从全局作用域获取发布者/订阅者，可在运行前通过静态工具类 `GlobalMessagePipe` 设置全局服务提供者 `IServiceProvider` ：
 
@@ -1343,7 +1343,7 @@ static void RegisterRequest<TRequest, TResponse, THandler>(IContainerBuilder bui
 }
 ```
 
-可通过 `GlobalMessagePipe` 和 `MessagePipe Diagnostics` 窗口管理订阅状态，详见：[全局服务提供者（Global provider）](#--------global-provider-) and [管理订阅与诊断（Managing Subscription and Diagnostics）](#--------managing-subscription-and-diagnostics-) 章节.
+可通过 `GlobalMessagePipe` 和 `MessagePipe Diagnostics` 窗口管理订阅状态，详见：[全局服务提供者](#全局服务提供者) and [管理订阅与诊断](#管理订阅与诊断) 章节.
 
 许可证协议
 ---
