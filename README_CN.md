@@ -31,7 +31,7 @@ MessagePipe 的性能远超标准 C# 事件，比 Prism 的 EventAggregator 快 
 
 > PM> Install-Package [MessagePipe](https://www.nuget.org/packages/MessagePipe)
 
-MessagePipe 基于 `Microsoft.Extensions.DependencyInjection`（Unity 中可使用 `VContainer`、`Zenject` 或内置 Tiny DI），通过 .NET 泛型主机（[.NET Generic Host](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host)）的 `ConfigureServices` 配置。泛型主机广泛应用于 ASP.NET Core、[MagicOnion](https://github.com/Cysharp/MagicOnion/)、[ConsoleAppFramework](https://github.com/Cysharp/ConsoleAppFramework/)、MAUI、WPF 等场景。
+MessagePipe 基于 `Microsoft.Extensions.DependencyInjection`（Unity 中可使用 `VContainer`、`Zenject` 或 `Builtin Tiny DI`），通过 .NET 泛型主机（[.NET Generic Host](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host)）的 `ConfigureServices` 配置。泛型主机广泛应用于 ASP.NET Core、[MagicOnion](https://github.com/Cysharp/MagicOnion/)、[ConsoleAppFramework](https://github.com/Cysharp/ConsoleAppFramework/)、MAUI、WPF 等场景。
 
 ```csharp
 using MessagePipe;
@@ -1318,7 +1318,7 @@ p.Publish(30);
 d.Dispose();
 ```
 
-> BuiltinContainerBuilder 不支持 scope（仅支持 `InstanceScope.Singleton`）、`IRequestAllHandler/IAsyncRequestAllHandler` 和许多 DI 功能，建议在 BuiltinContainerBuilder 中`GlobalMessagePipe`。
+> BuiltinContainerBuilder 不支持 scope（总是 `InstanceScope.Singleton`）、`IRequestAllHandler/IAsyncRequestAllHandler` 和其他很多 DI 功能，因此建议在 BuiltinContainerBuilder 中使用 `GlobalMessagePipe`。
 
 由于无法使用开放泛型过滤器，可通过辅助方法简化注册：
 
