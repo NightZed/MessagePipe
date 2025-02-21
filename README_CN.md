@@ -933,7 +933,6 @@ public async S(IDistributedSubscriber<string, int> subscriber)
 - **NamedPipe**：仅支持 1:1 连接。
 - **TCP**：无限制，灵活性最高。
 
-In default uses [MessagePack for C#](https://github.com/neuecc/MessagePack-CSharp)'s `ContractlessStandardResolver` for message serialization. You can change to use other `MessagePackSerializerOptions` by MessagePipeInterprocessOptions.MessagePackSerializerOptions.
 默认使用 [MessagePack for C#](https://github.com/neuecc/MessagePack-CSharp) 的 `ContractlessStandardResolver` 进行消息序列化，可通过 MessagePipeInterprocessOptions.MessagePackSerializerOptions 中的 `MessagePipeInterprocessOptions` 更换配置。
 
 ```csharp
