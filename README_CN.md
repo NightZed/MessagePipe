@@ -181,11 +181,11 @@ public partial class BlazorPage : ComponentBase, IDisposable
 
 ![接口关系图](https://user-images.githubusercontent.com/46207/122254092-bf87c980-cf07-11eb-8bdd-039c87309db6.png)
 
-接口虽多，但 API 设计统一，功能相似。
+接口虽多，但 API 设计统一，便于调用。
 
 发布/订阅接口
 ---
-发布/订阅接口分为带键（主题）和无键、同步和异步四类：
+发布/订阅接口分为带键（主题 topic）和无键、同步和异步四类：
 
 ```csharp
 // 无键-同步
