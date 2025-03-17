@@ -273,7 +273,7 @@ DisposableBag.Create(d1, d2).Dispose();
 
 > 若 `TMessage` 为类且无初始值（null），则订阅时不发送值。
 
-> Keyed buffered publisher/subscriber does not exist because difficult to avoid memory leak of (unused)key and keep latest value.> 不存在带键的缓冲发布者/订阅者，因为难以避免（未使用的）键的内存泄漏，也无法保证值最新。
+> 不存在带键的缓冲发布者/订阅者，因为难以避免（未使用的）键的内存泄漏，也无法保证值最新。
 
 事件工厂
 ---
